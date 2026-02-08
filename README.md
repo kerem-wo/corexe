@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# COREXE BEST - Oyun Hesap, UC ve Sosyal Medya Satış Sitesi
 
-## Getting Started
+Hesap.com.tr tarzında PUBG Mobile hesap satışı, UC satışı ve sosyal medya hesapları için modern, dark-blur tasarımlı site. GSAP animasyonları, slider, indirim bannerları, sepet ve WhatsApp iletişim entegrasyonu içerir.
 
-First, run the development server:
+## Özellikler
+
+- **Ana sayfa:** Slider (reklam/kampanya), indirim bannerları, **Oyun Hesapları**, **UC Satışları**, **Sosyal Medya Hesapları** bölümleri, sepet
+- **Dark-blur (glassmorphism)** arka plan ve bileşenler
+- **GSAP** ile giriş ve hover animasyonları
+- **Sepet:** Ürün ekleme, adet güncelleme, "Ödeme için iletişime geç" ile WhatsApp’a yönlendirme
+- **WhatsApp mesajı:** Sepetteki ürün başlıkları otomatik eklenir:  
+  `"[Ürün Başlığı] isimli hesap için iletişime geçiyorum yardımcı olur musunuz?"`
+- **Hakkımızda** ve **İletişim** sayfaları
+- **Admin paneli** (`/admin`): Site ayarları, slider, banner, oyun hesapları, **UC satışları**, **sosyal medya hesapları**, hakkımızda, iletişim içeriklerini güncelleme
+
+## Kurulum
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Tarayıcıda: [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Admin Paneli
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Adres: [http://localhost:3000/admin](http://localhost:3000/admin)
+- Varsayılan şifre: `admin123`
+- Şifreyi değiştirmek için `.env.local` dosyası oluşturup `ADMIN_PASSWORD=your_password` ekleyin.
 
-## Learn More
+Admin’den yapılabilecekler:
 
-To learn more about Next.js, take a look at the following resources:
+- **Site ayarları:** Site adı (COREXE BEST), WhatsApp numarası, e-posta, adres
+- **Slider:** Ana sayfa slider öğeleri (başlık, görsel URL, link, sıra)
+- **İndirim bannerları:** Reklam/indirim kartları
+- **Oyun Hesapları:** PUBG Mobile vb. hesap ilanları (başlık, fiyat, görsel, açıklama, kategori, sıra)
+- **UC Satışları:** UC paketleri (başlık, fiyat, görsel, açıklama, kategori, sıra)
+- **Sosyal Medya Hesapları:** Instagram, TikTok, YouTube vb. (başlık, fiyat, görsel, açıklama, kategori, sıra)
+- **Hakkımızda:** Başlık ve metin
+- **İletişim:** Başlık, açıklama, WhatsApp, e-posta, adres
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Tüm içerik `src/data/site-data.json` dosyasında saklanır ve admin üzerinden güncellenir.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## WhatsApp Numarası
 
-## Deploy on Vercel
+Site ayarlarındaki WhatsApp numarası 90 ile başlamalı (örn: `905527374558`). Sepette "Ödeme için iletişime geç" tıklandığında bu numaraya yönlendirilir ve mesaj otomatik doldurulur.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Görseller
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Slider ve ürün görselleri için `public/images/` klasörüne dosyalar ekleyebilir veya admin panelinden tam URL girebilirsiniz. Görsel yoksa gradient/placeholder kullanılır.
+
+## Teknolojiler
+
+- Next.js 14 (App Router)
+- React 18
+- Tailwind CSS 4
+- GSAP 3
+- TypeScript
