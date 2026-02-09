@@ -1,1 +1,4 @@
-data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjI1IiB2aWV3Qm94PSIwIDAgNDAwIDIyNSI+PHJlY3QgZmlsbD0iIzE0NTMyZCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMjUiLz48dGV4dCBmaWxsPSIjMjJjNTVlIiB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIzMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj4zMjUgVUM8L3RleHQ+PC9zdmc+
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="225" viewBox="0 0 400 225">
+  <rect fill="#14532d" width="400" height="225"/>
+  <text fill="#22c55e" x="50%" y="50%" font-size="32" font-family="sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="middle">325 UC</text>
+</svg>

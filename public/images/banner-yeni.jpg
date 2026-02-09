@@ -1,1 +1,4 @@
-data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgODAwIDQwMCI+PHJlY3QgZmlsbD0iIzE0NTMyZCIgd2lkdGg9IjgwMCIgaGVpZ2h0PSI0MDAiLz48dGV4dCBmaWxsPSIjMjJjNTVlIiB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIzNiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5ZRU7EsUkgSEVTQVBMQVI8L3RleHQ+PC9zdmc+
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <rect fill="#14532d" width="800" height="400"/>
+  <text fill="#22c55e" x="50%" y="50%" font-size="36" font-family="sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="middle">YENİ HESAPLAR</text>
+</svg>
