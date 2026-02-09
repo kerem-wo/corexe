@@ -18,8 +18,11 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/site")
-      .then((r) => r.json())
+    fetch("/api/site", { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) throw new Error('API error');
+        return r.json();
+      })
       .then(setData)
       .catch(() => setData(null));
   }, []);
