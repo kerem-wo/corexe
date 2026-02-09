@@ -65,8 +65,17 @@ export default function AdminProductsPage() {
 
   async function save() {
     if (!data) return;
+    
+    // Boş title'lı ürünleri kontrol et
+    const emptyProducts = data.products.filter(p => !p.title || p.title.trim() === '');
+    if (emptyProducts.length > 0) {
+      setMessage(`⚠️ ${emptyProducts.length} ürünün başlığı boş! Lütfen doldurun.`);
+      return;
+    }
+    
     setSaving(true);
     setMessage("");
+    console.log('💾 Kaydediliyor:', data.products.length, 'ürün');
     try {
       const res = await fetch("/api/site", {
         method: "PUT",
@@ -76,16 +85,21 @@ export default function AdminProductsPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa otomatik güncellenecek.");
+        setMessage("✅ Kaydedildi! Ana sayfa 10 saniye içinde otomatik güncellenecek.");
+        console.log('✅ Veri kaydedildi:', data.products.length, 'ürün');
         // Veriyi tekrar yükle
         setTimeout(() => {
           fetch("/api/site", { cache: 'no-store' })
             .then((r) => r.json())
-            .then(setData)
+            .then((newData) => {
+              console.log('🔄 Veri yenilendi:', newData.products?.length, 'ürün');
+              setData(newData);
+            })
             .catch(() => {});
         }, 500);
       } else {
         setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);
+        console.error('❌ Kayıt hatası:', result);
       }
     } catch (error) {
       setMessage(`❌ Bağlantı hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
