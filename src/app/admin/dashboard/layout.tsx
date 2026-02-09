@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({
   children,
 }: { children: React.ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!sessionStorage.getItem("admin_token")) {
+    const token = sessionStorage.getItem("admin_token");
+    const email = sessionStorage.getItem("admin_email");
+    
+    // Token ve email kontrolü - ikisi de olmalı
+    if (!token || !email) {
       router.replace("/admin");
     }
   }, [router]);

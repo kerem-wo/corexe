@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import ConditionalLayout from "@/components/ConditionalLayout";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -24,9 +23,7 @@ export default function RootLayout({
     <html lang="tr">
       <body className={`${inter.variable} font-sans antialiased bg-mesh min-h-screen`}>
         <CartProvider>
-          <Header />
-          <main className="pt-20 pb-12 min-h-screen">{children}</main>
-          <Footer />
+          <ConditionalLayout>{children}</ConditionalLayout>
         </CartProvider>
       </body>
     </html>

@@ -86,12 +86,6 @@ export default function Header() {
                 </span>
               )}
             </Link>
-            <Link
-              href="/admin"
-              className="text-xs text-zinc-500 hover:text-zinc-400 transition-colors duration-300"
-            >
-              Admin
-            </Link>
           </div>
         </div>
       </div>

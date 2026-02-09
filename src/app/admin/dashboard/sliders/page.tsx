@@ -12,9 +12,13 @@ export default function AdminSlidersPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !sessionStorage.getItem("admin_token")) {
-      router.replace("/admin");
-      return;
+    if (typeof window !== "undefined") {
+      const token = sessionStorage.getItem("admin_token");
+      const email = sessionStorage.getItem("admin_email");
+      if (!token || !email) {
+        router.replace("/admin");
+        return;
+      }
     }
     fetch("/api/site")
       .then((r) => r.json())

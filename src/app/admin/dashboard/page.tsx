@@ -11,9 +11,13 @@ export default function AdminDashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !sessionStorage.getItem("admin_token")) {
-      router.replace("/admin");
-      return;
+    if (typeof window !== "undefined") {
+      const token = sessionStorage.getItem("admin_token");
+      const email = sessionStorage.getItem("admin_email");
+      if (!token || !email) {
+        router.replace("/admin");
+        return;
+      }
     }
     fetch("/api/site")
       .then((r) => r.json())
@@ -24,6 +28,7 @@ export default function AdminDashboardPage() {
 
   function handleLogout() {
     sessionStorage.removeItem("admin_token");
+    sessionStorage.removeItem("admin_email");
     router.replace("/admin");
     router.refresh();
   }
@@ -40,14 +45,21 @@ export default function AdminDashboardPage() {
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
+            {typeof window !== "undefined" && sessionStorage.getItem("admin_email") && (
+              <p className="text-sm text-zinc-400 mt-1">
+                {sessionStorage.getItem("admin_email")}
+              </p>
+            )}
+          </div>
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-sm text-zinc-400 hover:text-white">
+            <Link href="/" className="text-sm text-zinc-400 hover:text-white transition-colors">
               Siteye Git
             </Link>
             <button
               onClick={handleLogout}
-              className="text-sm text-red-400 hover:text-red-300"
+              className="text-sm text-red-400 hover:text-red-300 transition-colors"
             >
               Çıkış
             </button>
