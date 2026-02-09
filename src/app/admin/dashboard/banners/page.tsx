@@ -68,7 +68,7 @@ export default function AdminBannersPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        console.log('✅ Veritabanına kaydedildi:', data.banners.length, 'banner');
+        console.log('✅ Veritabanına kaydedildi:', data.discountBanners.length, 'banner');
         notifySiteUpdate(); // ANLIK GÜNCELLEME
         console.log('📢 Güncelleme bildirimi gönderildi');
         // Veritabanından doğrula
@@ -76,9 +76,9 @@ export default function AdminBannersPage() {
           try {
             const verifyRes = await fetch("/api/site", { cache: 'no-store' });
             const verifiedData = await verifyRes.json();
-            console.log('✅ Veritabanı doğrulandı:', verifiedData.banners?.length, 'banner');
+            console.log('✅ Veritabanı doğrulandı:', verifiedData.discountBanners?.length, 'banner');
             setData(verifiedData);
-            setMessage(`✅ Kaydedildi ve doğrulandı! ${verifiedData.banners?.length || 0} banner veritabanında. Ana sayfa anında güncellenecek.`);
+            setMessage(`✅ Kaydedildi ve doğrulandı! ${verifiedData.discountBanners?.length || 0} banner veritabanında. Ana sayfa anında güncellenecek.`);
           } catch (err) {
             console.error('⚠️ Doğrulama hatası:', err);
             setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
