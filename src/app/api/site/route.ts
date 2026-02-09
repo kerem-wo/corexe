@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSiteData, saveSiteData } from "@/lib/supabase";
+import { getSiteData, saveSiteData } from "@/lib/postgres";
 import type { SiteData } from "@/lib/types";
 
 // API route'unun dynamic olmasını zorunlu kıl
