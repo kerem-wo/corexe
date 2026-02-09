@@ -68,7 +68,7 @@ export default function AdminSocialLinksPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Sayfayı yenileyin.");
+        setMessage("✅ Kaydedildi! Ana sayfa otomatik güncellenecek.");
         // Veriyi tekrar yükle
         setTimeout(() => {
           fetch("/api/site", { cache: 'no-store' })

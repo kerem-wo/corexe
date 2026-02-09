@@ -20,8 +20,11 @@ export default function AdminBannersPage() {
         return;
       }
     }
-    fetch("/api/site")
-      .then((r) => r.json())
+    fetch("/api/site", { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) throw new Error('API error');
+        return r.json();
+      })
       .then(setData)
       .catch(() => setData(null));
   }, [router]);
@@ -60,9 +63,20 @@ export default function AdminBannersPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        cache: 'no-store',
       });
-      if (res.ok) setMessage("Kaydedildi.");
-      else setMessage("Kayıt başarısız.");
+      const result = await res.json();
+      if (res.ok && result.success) {
+        setMessage("✅ Kaydedildi! Ana sayfa otomatik güncellenecek.");
+        setTimeout(() => {
+          fetch("/api/site", { cache: 'no-store' })
+            .then((r) => r.json())
+            .then(setData)
+            .catch(() => {});
+        }, 500);
+      } else {
+        setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);
+      }
     } catch {
       setMessage("Bağlantı hatası.");
     } finally {

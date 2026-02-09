@@ -21,8 +21,11 @@ export default function AdminAboutPage() {
         return;
       }
     }
-    fetch("/api/site")
-      .then((r) => r.json())
+    fetch("/api/site", { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) throw new Error('API error');
+        return r.json();
+      })
       .then((d) => {
         setData(d);
         setForm({
@@ -46,11 +49,15 @@ export default function AdminAboutPage() {
           ...data,
           about: form,
         }),
+        cache: 'no-store',
       });
-      if (res.ok) {
-        setMessage("Kaydedildi.");
+      const result = await res.json();
+      if (res.ok && result.success) {
+        setMessage("✅ Kaydedildi! Ana sayfa otomatik güncellenecek.");
         setData({ ...data, about: form });
-      } else setMessage("Kayıt başarısız.");
+      } else {
+        setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);
+      }
     } catch {
       setMessage("Bağlantı hatası.");
     } finally {

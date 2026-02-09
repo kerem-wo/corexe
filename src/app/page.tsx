@@ -17,7 +17,8 @@ export default function HomePage() {
     registerGsapPlugins();
   }, []);
 
-  useEffect(() => {
+  // Veriyi yükle
+  const loadData = () => {
     fetch("/api/site", { cache: 'no-store' })
       .then((r) => {
         if (!r.ok) throw new Error('API error');
@@ -32,6 +33,34 @@ export default function HomePage() {
         console.error('Failed to load site data:', error);
         setData(null);
       });
+  };
+
+  useEffect(() => {
+    loadData();
+    
+    // Sayfa aktif olduğunda ve her 30 saniyede bir veriyi yeniden yükle
+    const interval = setInterval(loadData, 30000); // 30 saniye
+    
+    // Sayfa görünür olduğunda veriyi yeniden yükle
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadData();
+      }
+    };
+    
+    // Window focus olduğunda veriyi yeniden yükle
+    const handleFocus = () => {
+      loadData();
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   if (!data) {

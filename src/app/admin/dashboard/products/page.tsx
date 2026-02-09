@@ -20,8 +20,11 @@ export default function AdminProductsPage() {
         return;
       }
     }
-    fetch("/api/site")
-      .then((r) => r.json())
+    fetch("/api/site", { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) throw new Error('API error');
+        return r.json();
+      })
       .then(setData)
       .catch(() => setData(null));
   }, [router]);
@@ -69,11 +72,23 @@ export default function AdminProductsPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        cache: 'no-store',
       });
-      if (res.ok) setMessage("Kaydedildi.");
-      else setMessage("Kayıt başarısız.");
-    } catch {
-      setMessage("Bağlantı hatası.");
+      const result = await res.json();
+      if (res.ok && result.success) {
+        setMessage("✅ Kaydedildi! Ana sayfa otomatik güncellenecek.");
+        // Veriyi tekrar yükle
+        setTimeout(() => {
+          fetch("/api/site", { cache: 'no-store' })
+            .then((r) => r.json())
+            .then(setData)
+            .catch(() => {});
+        }, 500);
+      } else {
+        setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);
+      }
+    } catch (error) {
+      setMessage(`❌ Bağlantı hatası: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
     } finally {
       setSaving(false);
     }
