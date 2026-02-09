@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { getSiteData, saveSiteData } from "@/lib/supabase";
 import type { SiteData } from "@/lib/types";
 
+// API route'unun dynamic olmasını zorunlu kıl
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
     const data = await getSiteData();
