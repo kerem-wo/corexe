@@ -23,8 +23,15 @@ export default function HomePage() {
         if (!r.ok) throw new Error('API error');
         return r.json();
       })
-      .then(setData)
-      .catch(() => setData(null));
+      .then((data) => {
+        console.log('Site data loaded:', data);
+        console.log('Social links:', data.socialLinks);
+        setData(data);
+      })
+      .catch((error) => {
+        console.error('Failed to load site data:', error);
+        setData(null);
+      });
   }, []);
 
   if (!data) {

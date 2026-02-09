@@ -14,6 +14,11 @@ export default function SocialLinksSection({ links }: SocialLinksSectionProps) {
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const sorted = [...links].sort((a, b) => a.order - b.order);
 
+  // Debug: Console'da linkleri göster
+  useEffect(() => {
+    console.log('SocialLinksSection - Links:', sorted);
+  }, [sorted]);
+
   useEffect(() => {
     registerGsapPlugins();
     const ctx = gsap.context(() => {
