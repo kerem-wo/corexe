@@ -26,6 +26,8 @@ export default function HomePage() {
       })
       .then((data) => {
         console.log('Site data loaded:', data);
+        console.log('Products:', data.products);
+        console.log('UC Products:', data.ucProducts);
         console.log('Social links:', data.socialLinks);
         setData(data);
       })
@@ -38,8 +40,8 @@ export default function HomePage() {
   useEffect(() => {
     loadData();
     
-    // Sayfa aktif olduğunda ve her 30 saniyede bir veriyi yeniden yükle
-    const interval = setInterval(loadData, 30000); // 30 saniye
+    // Sayfa aktif olduğunda ve her 10 saniyede bir veriyi yeniden yükle
+    const interval = setInterval(loadData, 10000); // 10 saniye (daha hızlı güncelleme)
     
     // Sayfa görünür olduğunda veriyi yeniden yükle
     const handleVisibilityChange = () => {
@@ -71,9 +73,21 @@ export default function HomePage() {
     );
   }
 
-  const products = [...(data.products || [])].sort((a, b) => a.order - b.order);
-  const ucProducts = [...(data.ucProducts || [])].sort((a, b) => a.order - b.order);
-  const socialLinks = [...(data.socialLinks || [])].sort((a, b) => a.order - b.order);
+  // Boş ürünleri filtrele ve sırala
+  const products = [...(data.products || [])]
+    .filter(p => p && p.title && p.title.trim() !== '') // Boş title'ları filtrele
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+  const ucProducts = [...(data.ucProducts || [])]
+    .filter(p => p && p.title && p.title.trim() !== '') // Boş title'ları filtrele
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+  const socialLinks = [...(data.socialLinks || [])].sort((a, b) => (a.order || 0) - (b.order || 0));
+  
+  // Debug: Console'da ürün sayılarını göster
+  console.log(`📦 Ürünler: ${products.length} adet (toplam: ${data.products?.length || 0})`);
+  console.log(`💰 UC Ürünleri: ${ucProducts.length} adet (toplam: ${data.ucProducts?.length || 0})`);
+  if (products.length !== (data.products?.length || 0)) {
+    console.warn('⚠️ Bazı ürünler boş title nedeniyle filtrelendi!');
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
