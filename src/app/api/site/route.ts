@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSiteData, saveSiteData } from "@/lib/supabase";
+import { getSiteData, saveSiteData } from "@/lib/database";
 import type { SiteData } from "@/lib/types";
 
 export async function GET() {
