@@ -1,28 +1,24 @@
-# PostgreSQL Kurulumu
+# Veritabanı Kurulumu - PostgreSQL
 
-Proje artık direkt PostgreSQL bağlantısı kullanıyor (Supabase client yerine).
+Proje artık sadece PostgreSQL kullanıyor. Vercel Prisma Postgres veya başka bir PostgreSQL servisi kullanabilirsiniz.
 
 ---
 
 ## 1. PostgreSQL Connection String Al
 
-### Supabase PostgreSQL Kullanıyorsanız:
+### Vercel Prisma Postgres Kullanıyorsanız:
 
-1. **Supabase Dashboard** → Projenizi seçin
-2. Sol menü → **Settings** → **Database**
-3. **Connection string** → **URI** sekmesine tıklayın
-4. Connection string'i kopyalayın:
+1. **Vercel Dashboard** → Projenizi seçin
+2. **Storage** → **Prisma Postgres** → Veritabanınızı seçin
+3. Connection string'i kopyalayın:
    ```
-   postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+   postgres://user:password@db.prisma.io:5432/postgres?sslmode=require
    ```
-   - `[YOUR-PASSWORD]` → Proje oluştururken belirlediğiniz şifre
-   - `[PROJECT-REF]` → Proje referansı (örn: `shcxrmpqdbbfdwbqucij`)
 
 ### Başka Bir PostgreSQL Servisi Kullanıyorsanız:
 
 - **Railway**: Railway Dashboard → PostgreSQL → **Connect** → Connection string
 - **Neon**: Neon Dashboard → **Connection string**
-- **Vercel Postgres**: Vercel Dashboard → **Storage** → **Postgres** → **.env.local**
 - **Heroku Postgres**: Heroku Dashboard → **Settings** → **Database Credentials**
 
 ---
@@ -31,7 +27,7 @@ Proje artık direkt PostgreSQL bağlantısı kullanıyor (Supabase client yerine
 
 1. **Vercel Dashboard** → Projenizi seçin
 2. **Settings** → **Environment Variables**
-3. **Add** → Yeni değişken ekle:
+3. **Add** → Yeni değişken:
    - **Key:** `DATABASE_URL`
    - **Value:** PostgreSQL connection string'iniz
    - **Environment:** Production, Preview, Development (hepsini seç)
@@ -45,11 +41,11 @@ Proje klasöründe `.env.local` dosyası oluştur:
 
 ```env
 # PostgreSQL Connection String
-DATABASE_URL=postgresql://postgres:password@host:5432/database?sslmode=require
+DATABASE_URL=postgres://user:password@host:5432/database?sslmode=require
 
 # Admin Panel Giriş Bilgileri
-ADMIN_EMAIL=admin@corexe.best
-ADMIN_PASSWORD=admin123
+ADMIN_EMAIL=xcorexebest@adminplat.com
+ADMIN_PASSWORD=CorexeBest09022026
 ```
 
 `.env.local` dosyası `.gitignore`'da olduğu için GitHub'a pushlanmaz (güvenli).
@@ -58,10 +54,35 @@ ADMIN_PASSWORD=admin123
 
 ## 4. Veritabanı Tablosunu Oluştur
 
-PostgreSQL veritabanınızda şu SQL'i çalıştırın:
+### Yöntem 1: Reset Script (Önerilen)
+
+Terminal'de:
+
+```bash
+node scripts/reset-db.js
+```
+
+Bu script:
+- Eski tabloyu siler (varsa)
+- Yeni tablo oluşturur
+- İlk verileri ekler (COREXE BEST default data)
+
+### Yöntem 2: Init Script
+
+Terminal'de:
+
+```bash
+node scripts/init-db.js
+```
+
+Bu script sadece tablo oluşturur ve ilk veriyi ekler (tablo varsa hata vermez).
+
+### Yöntem 3: Manuel SQL
+
+PostgreSQL client'ınızda (psql, pgAdmin, vb.) şu SQL'i çalıştırın:
 
 ```sql
--- site_data tablosu oluştur
+-- Tablo oluştur
 CREATE TABLE IF NOT EXISTS site_data (
   id TEXT PRIMARY KEY DEFAULT 'main',
   data JSONB NOT NULL,
@@ -97,12 +118,6 @@ VALUES ('main', '{
 ON CONFLICT (id) DO NOTHING;
 ```
 
-### Supabase SQL Editor'de:
-
-1. **Supabase Dashboard** → Sol menü → **SQL Editor**
-2. **New query** → Yukarıdaki SQL'i yapıştır
-3. **Run** (veya F5) → Tablo oluşturuldu
-
 ---
 
 ## 5. Deploy
@@ -114,10 +129,18 @@ ON CONFLICT (id) DO NOTHING;
 
 ## Avantajlar
 
-✅ **Direkt PostgreSQL** - Supabase client'a bağımlı değil  
-✅ **Herhangi bir PostgreSQL servisi** - Supabase, Neon, Railway, Vercel Postgres, vb.  
+✅ **Sadece PostgreSQL** - Bağımlılık yok  
+✅ **Herhangi bir PostgreSQL servisi** - Vercel Prisma Postgres, Railway, Neon, Heroku Postgres, vb.  
 ✅ **Daha fazla kontrol** - SQL sorgularını direkt yazabilirsiniz  
 ✅ **Performans** - Connection pool ile optimize edilmiş  
+✅ **Temiz kod** - Gereksiz bağımlılıklar yok  
+
+---
+
+## Script'ler
+
+- `scripts/reset-db.js` - Veritabanını temizle ve sıfırdan kur
+- `scripts/init-db.js` - Tablo oluştur ve ilk veriyi ekle
 
 ---
 
@@ -126,7 +149,7 @@ ON CONFLICT (id) DO NOTHING;
 - `DATABASE_URL` environment variable'ı **mutlaka** eklenmeli
 - Connection string formatı: `postgresql://user:password@host:port/database?sslmode=require`
 - SSL mode genellikle `require` olmalı (cloud PostgreSQL servisleri için)
-- Supabase kullanıyorsanız, connection string'de şifreyi doğru yazdığınızdan emin olun
+- Admin panelinden yapılan tüm değişiklikler otomatik olarak veritabanına kaydedilir ve site anında güncellenir
 
 ---
 
@@ -138,8 +161,8 @@ ON CONFLICT (id) DO NOTHING;
 - SSL mode'un `require` olduğundan emin olun
 
 ### Tablo bulunamıyor
-- SQL script'ini çalıştırdığınızdan emin olun
-- Tablo adının `site_data` olduğunu kontrol edin
+- `scripts/reset-db.js` veya `scripts/init-db.js` script'ini çalıştırdığınızdan emin olun
+- PostgreSQL client'ınızda tablo oluşturulduğunu kontrol edin
 
 ### Environment variable çalışmıyor
 - Vercel'de environment variable ekledikten sonra **yeni deploy** yapın

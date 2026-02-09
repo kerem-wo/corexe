@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import type { SiteData } from "./types";
 
-// PostgreSQL connection string (Supabase PostgreSQL veya başka bir PostgreSQL servisi)
+// PostgreSQL connection string (Vercel Prisma Postgres veya başka bir PostgreSQL servisi)
 const databaseUrl = process.env.DATABASE_URL || "";
 
 // PostgreSQL connection pool oluştur
@@ -12,7 +12,7 @@ if (databaseUrl) {
     pool = new Pool({
       connectionString: databaseUrl,
       ssl: {
-        rejectUnauthorized: false, // Supabase ve çoğu cloud PostgreSQL için gerekli
+        rejectUnauthorized: false, // Cloud PostgreSQL servisleri için gerekli
       },
       max: 1, // Serverless ortamlar için connection pool'u küçük tut
     });
