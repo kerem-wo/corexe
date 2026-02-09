@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { notifySiteUpdate } from "@/lib/updateNotifier";
+import { notifySiteUpdate, listenForSiteUpdates } from "@/lib/updateNotifier";
 import type { SiteData } from "@/lib/types";
 
 export default function AdminSitePage() {
@@ -12,6 +12,32 @@ export default function AdminSitePage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
+
+  const loadData = () => {
+    fetch("/api/site", { 
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error('API error');
+        return r.json();
+      })
+      .then((d) => {
+        console.log('🔄 Admin panel - Veri yenilendi:', d.site?.name);
+        setData(d);
+        setForm({
+          name: d.site?.name ?? "",
+          whatsapp: d.site?.whatsapp ?? "",
+          email: d.site?.email ?? "",
+          address: d.site?.address ?? "",
+        });
+      })
+      .catch(() => setData(null));
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -22,21 +48,21 @@ export default function AdminSitePage() {
         return;
       }
     }
-    fetch("/api/site", { cache: 'no-store' })
-      .then((r) => {
-        if (!r.ok) throw new Error('API error');
-        return r.json();
-      })
-      .then((d) => {
-        setData(d);
-        setForm({
-          name: d.site?.name ?? "",
-          whatsapp: d.site?.whatsapp ?? "",
-          email: d.site?.email ?? "",
-          address: d.site?.address ?? "",
-        });
-      })
-      .catch(() => setData(null));
+    loadData();
+    
+    // Otomatik güncelleme dinle (başka admin panelinden yapılan değişiklikler için)
+    const cleanup = listenForSiteUpdates(() => {
+      console.log('⚡ Admin panel - Güncelleme algılandı');
+      loadData();
+    });
+    
+    // Her 3 saniyede bir otomatik yenile
+    const interval = setInterval(loadData, 3000);
+    
+    return () => {
+      cleanup();
+      clearInterval(interval);
+    };
   }, [router]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -59,14 +85,27 @@ export default function AdminSitePage() {
         console.log('✅ Veritabanına kaydedildi: Site ayarları');
         notifySiteUpdate(); // ANLIK GÜNCELLEME
         console.log('📢 Güncelleme bildirimi gönderildi');
-        // Veritabanından doğrula
+        // Veritabanından doğrula ve formu güncelle
         setTimeout(async () => {
           try {
-            const verifyRes = await fetch("/api/site", { cache: 'no-store' });
+            const verifyRes = await fetch("/api/site", { 
+              cache: 'no-store',
+              headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              }
+            });
             const verifiedData = await verifyRes.json();
             console.log('✅ Veritabanı doğrulandı: Site ayarları');
             setData(verifiedData);
-            setMessage("✅ Kaydedildi ve doğrulandı! Ana sayfa anında güncellenecek.");
+            setForm({
+              name: verifiedData.site?.name ?? "",
+              whatsapp: verifiedData.site?.whatsapp ?? "",
+              email: verifiedData.site?.email ?? "",
+              address: verifiedData.site?.address ?? "",
+            });
+            setMessage("✅ Kaydedildi ve doğrulandı! Site adı ve tüm ayarlar anında güncellendi.");
           } catch (err) {
             console.error('⚠️ Doğrulama hatası:', err);
             setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");

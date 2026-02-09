@@ -3,12 +3,34 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { listenForSiteUpdates } from "@/lib/updateNotifier";
 import type { SiteData } from "@/lib/types";
 
 export default function AdminDashboardPage() {
   const [data, setData] = useState<SiteData | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  const loadData = () => {
+    fetch("/api/site", { 
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error('API error');
+        return r.json();
+      })
+      .then((d) => {
+        console.log('🔄 Admin dashboard - Veri yenilendi');
+        setData(d);
+      })
+      .catch(() => setData(null))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -19,14 +41,21 @@ export default function AdminDashboardPage() {
         return;
       }
     }
-    fetch("/api/site", { cache: 'no-store' })
-      .then((r) => {
-        if (!r.ok) throw new Error('API error');
-        return r.json();
-      })
-      .then(setData)
-      .catch(() => setData(null))
-      .finally(() => setLoading(false));
+    loadData();
+    
+    // Otomatik güncelleme dinle
+    const cleanup = listenForSiteUpdates(() => {
+      console.log('⚡ Admin dashboard - Güncelleme algılandı');
+      loadData();
+    });
+    
+    // Her 3 saniyede bir otomatik yenile
+    const interval = setInterval(loadData, 3000);
+    
+    return () => {
+      cleanup();
+      clearInterval(interval);
+    };
   }, [router]);
 
   function handleLogout() {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useSiteData } from "@/context/SiteDataContext";
 import { registerGsapPlugins, gsap } from "@/lib/gsap";
 import { useRef, useEffect } from "react";
 
@@ -51,8 +52,9 @@ export default function Header() {
             ref={logoRef}
             href="/"
             className="text-xl font-bold text-white tracking-tight transition-transform duration-300 hover:scale-105 active:scale-100"
+            key={siteName} // Force re-render when site name changes
           >
-            COREXE BEST
+            {siteName}
           </Link>
           <nav className="hidden md:flex items-center gap-8">
             {nav.map(({ href, label }, i) => (

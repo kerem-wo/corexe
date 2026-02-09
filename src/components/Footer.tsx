@@ -1,13 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useSiteData } from "@/context/SiteDataContext";
 import { registerGsapPlugins, gsap, ScrollTrigger } from "@/lib/gsap";
 import { useRef, useEffect } from "react";
 
 export default function Footer() {
+  const { data: siteData } = useSiteData();
   const footerRef = useRef<HTMLElement>(null);
   const colRefs = useRef<(HTMLDivElement | null)[]>([]);
   const linksRef = useRef<HTMLUListElement>(null);
+  
+  const siteName = siteData?.site?.name || "COREXE BEST";
+  const whatsapp = siteData?.site?.whatsapp || "+905527374558";
 
   useEffect(() => {
     registerGsapPlugins();
@@ -39,7 +44,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div ref={(r) => { colRefs.current[0] = r; }}>
-            <h3 className="text-lg font-semibold text-white mb-4">COREXE BEST</h3>
+            <h3 className="text-lg font-semibold text-white mb-4" key={siteName}>{siteName}</h3>
             <p className="text-sm text-zinc-400">
               Oyun hesapları, UC satışı ve sosyal medya hizmetleri.
             </p>
@@ -77,7 +82,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-zinc-500">
-          © {new Date().getFullYear()} COREXE BEST. Tüm hakları saklıdır.
+          © {new Date().getFullYear()} {siteName}. Tüm hakları saklıdır.
         </div>
       </div>
     </footer>

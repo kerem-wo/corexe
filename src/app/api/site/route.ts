@@ -12,7 +12,14 @@ export async function GET() {
     if (!data) {
       return NextResponse.json({ error: "Veri okunamadı" }, { status: 500 });
     }
-    return NextResponse.json(data);
+    // Cache'i tamamen devre dışı bırak - her zaman fresh data
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+    });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: "Veri okunamadı" }, { status: 500 });

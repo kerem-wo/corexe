@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import HeroSlider from "@/components/HeroSlider";
 import DiscountBanners from "@/components/DiscountBanners";
 import ProductCard from "@/components/ProductCard";
@@ -8,72 +8,16 @@ import SocialLinksSection from "@/components/SocialLinksSection";
 import CartSection from "@/components/CartSection";
 import AnimatedSection from "@/components/AnimatedSection";
 import { registerGsapPlugins } from "@/lib/gsap";
-import { listenForSiteUpdates } from "@/lib/updateNotifier";
-import type { SiteData } from "@/lib/types";
+import { useSiteData } from "@/context/SiteDataContext";
 
 export default function HomePage() {
-  const [data, setData] = useState<SiteData | null>(null);
+  const { data, loading } = useSiteData();
 
   useEffect(() => {
     registerGsapPlugins();
   }, []);
 
-  // Veriyi yükle
-  const loadData = () => {
-    fetch("/api/site", { cache: 'no-store' })
-      .then((r) => {
-        if (!r.ok) throw new Error('API error');
-        return r.json();
-      })
-      .then((data) => {
-        console.log('Site data loaded:', data);
-        console.log('Products:', data.products);
-        console.log('UC Products:', data.ucProducts);
-        console.log('Social links:', data.socialLinks);
-        setData(data);
-      })
-      .catch((error) => {
-        console.error('Failed to load site data:', error);
-        setData(null);
-      });
-  };
-
-  useEffect(() => {
-    loadData();
-    
-    // Admin panelinden gelen güncelleme bildirimlerini dinle (ANLIK GÜNCELLEME)
-    const cleanup = listenForSiteUpdates(() => {
-      console.log('⚡ Admin panelinden güncelleme geldi, veri yenileniyor...');
-      loadData();
-    });
-    
-    // Sayfa aktif olduğunda ve her 3 saniyede bir veriyi yeniden yükle (fallback - daha hızlı güncelleme)
-    const interval = setInterval(loadData, 3000); // 3 saniye (anlık güncelleme için optimize edildi)
-    
-    // Sayfa görünür olduğunda veriyi yeniden yükle
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        loadData();
-      }
-    };
-    
-    // Window focus olduğunda veriyi yeniden yükle
-    const handleFocus = () => {
-      loadData();
-    };
-    
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    
-    return () => {
-      cleanup();
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, []);
-
-  if (!data) {
+  if (loading || !data) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
         <div className="animate-subtle-pulse text-zinc-500">Yükleniyor...</div>

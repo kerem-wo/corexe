@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { registerGsapPlugins, gsap } from "@/lib/gsap";
+import { listenForSiteUpdates } from "@/lib/updateNotifier";
 import { useRef } from "react";
 import type { AboutContent } from "@/lib/types";
 
@@ -11,11 +12,39 @@ export default function HakkimizdaPage() {
   const contentRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    fetch("/api/site")
+  const loadData = () => {
+    fetch("/api/site", { 
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
       .then((r) => r.json())
-      .then((data) => setAbout(data.about))
+      .then((data) => {
+        console.log('🔄 Hakkımızda sayfası - Veri yenilendi');
+        setAbout(data.about);
+      })
       .catch(() => setAbout(null));
+  };
+
+  useEffect(() => {
+    loadData();
+    
+    // Otomatik güncelleme dinle
+    const cleanup = listenForSiteUpdates(() => {
+      console.log('⚡ Hakkımızda - Güncelleme algılandı');
+      loadData();
+    });
+    
+    // Her 3 saniyede bir otomatik yenile
+    const interval = setInterval(loadData, 3000);
+    
+    return () => {
+      cleanup();
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {

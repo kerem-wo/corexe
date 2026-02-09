@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { SiteDataProvider } from "@/context/SiteDataContext";
 import ConditionalLayout from "@/components/ConditionalLayout";
 
 const inter = Inter({
@@ -22,9 +23,11 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={`${inter.variable} font-sans antialiased bg-mesh min-h-screen`}>
-        <CartProvider>
-          <ConditionalLayout>{children}</ConditionalLayout>
-        </CartProvider>
+        <SiteDataProvider>
+          <CartProvider>
+            <ConditionalLayout>{children}</ConditionalLayout>
+          </CartProvider>
+        </SiteDataProvider>
       </body>
     </html>
   );

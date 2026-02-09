@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { registerGsapPlugins, gsap } from "@/lib/gsap";
+import { listenForSiteUpdates } from "@/lib/updateNotifier";
 import { useRef } from "react";
 import type { ContactContent } from "@/lib/types";
 
@@ -10,11 +11,39 @@ export default function IletisimPage() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLAnchorElement | HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
-    fetch("/api/site")
+  const loadData = () => {
+    fetch("/api/site", { 
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
       .then((r) => r.json())
-      .then((data) => setContact(data.contact))
+      .then((data) => {
+        console.log('🔄 İletişim sayfası - Veri yenilendi');
+        setContact(data.contact);
+      })
       .catch(() => setContact(null));
+  };
+
+  useEffect(() => {
+    loadData();
+    
+    // Otomatik güncelleme dinle
+    const cleanup = listenForSiteUpdates(() => {
+      console.log('⚡ İletişim - Güncelleme algılandı');
+      loadData();
+    });
+    
+    // Her 3 saniyede bir otomatik yenile
+    const interval = setInterval(loadData, 3000);
+    
+    return () => {
+      cleanup();
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
