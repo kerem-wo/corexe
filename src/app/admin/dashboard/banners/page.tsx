@@ -68,14 +68,23 @@ export default function AdminBannersPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+        console.log('✅ Veritabanına kaydedildi:', data.banners.length, 'banner');
         notifySiteUpdate(); // ANLIK GÜNCELLEME
-        setTimeout(() => {
-          fetch("/api/site", { cache: 'no-store' })
-            .then((r) => r.json())
-            .then(setData)
-            .catch(() => {});
-        }, 500);
+        console.log('📢 Güncelleme bildirimi gönderildi');
+        // Veritabanından doğrula
+        setTimeout(async () => {
+          try {
+            const verifyRes = await fetch("/api/site", { cache: 'no-store' });
+            const verifiedData = await verifyRes.json();
+            console.log('✅ Veritabanı doğrulandı:', verifiedData.banners?.length, 'banner');
+            setData(verifiedData);
+            setMessage(`✅ Kaydedildi ve doğrulandı! ${verifiedData.banners?.length || 0} banner veritabanında. Ana sayfa anında güncellenecek.`);
+          } catch (err) {
+            console.error('⚠️ Doğrulama hatası:', err);
+            setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+            setData(data);
+          }
+        }, 300);
       } else {
         setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);
       }

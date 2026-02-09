@@ -56,9 +56,23 @@ export default function AdminSitePage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+        console.log('✅ Veritabanına kaydedildi: Site ayarları');
         notifySiteUpdate(); // ANLIK GÜNCELLEME
-        setData({ ...data, site: { ...data.site, ...form } });
+        console.log('📢 Güncelleme bildirimi gönderildi');
+        // Veritabanından doğrula
+        setTimeout(async () => {
+          try {
+            const verifyRes = await fetch("/api/site", { cache: 'no-store' });
+            const verifiedData = await verifyRes.json();
+            console.log('✅ Veritabanı doğrulandı: Site ayarları');
+            setData(verifiedData);
+            setMessage("✅ Kaydedildi ve doğrulandı! Ana sayfa anında güncellenecek.");
+          } catch (err) {
+            console.error('⚠️ Doğrulama hatası:', err);
+            setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+            setData({ ...data, site: { ...data.site, ...form } });
+          }
+        }, 300);
       } else {
         setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);
       }

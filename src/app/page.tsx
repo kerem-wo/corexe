@@ -47,8 +47,8 @@ export default function HomePage() {
       loadData();
     });
     
-    // Sayfa aktif olduğunda ve her 10 saniyede bir veriyi yeniden yükle (fallback)
-    const interval = setInterval(loadData, 10000); // 10 saniye
+    // Sayfa aktif olduğunda ve her 3 saniyede bir veriyi yeniden yükle (fallback - daha hızlı güncelleme)
+    const interval = setInterval(loadData, 3000); // 3 saniye (anlık güncelleme için optimize edildi)
     
     // Sayfa görünür olduğunda veriyi yeniden yükle
     const handleVisibilityChange = () => {

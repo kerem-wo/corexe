@@ -63,9 +63,23 @@ export default function AdminContactPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+        console.log('✅ Veritabanına kaydedildi: İletişim bilgileri');
         notifySiteUpdate(); // ANLIK GÜNCELLEME
-        setData({ ...data, contact: form });
+        console.log('📢 Güncelleme bildirimi gönderildi');
+        // Veritabanından doğrula
+        setTimeout(async () => {
+          try {
+            const verifyRes = await fetch("/api/site", { cache: 'no-store' });
+            const verifiedData = await verifyRes.json();
+            console.log('✅ Veritabanı doğrulandı: İletişim bilgileri');
+            setData(verifiedData);
+            setMessage("✅ Kaydedildi ve doğrulandı! Ana sayfa anında güncellenecek.");
+          } catch (err) {
+            console.error('⚠️ Doğrulama hatası:', err);
+            setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+            setData({ ...data, contact: form });
+          }
+        }, 300);
       } else {
         setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);
       }

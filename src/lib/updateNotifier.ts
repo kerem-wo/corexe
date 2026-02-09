@@ -15,9 +15,16 @@ export function notifySiteUpdate() {
   }
   
   // localStorage fallback (daha geniş tarayıcı desteği)
+  // Aynı tab'da çalışması için custom event kullan
   try {
-    localStorage.setItem('corexe-site-update', Date.now().toString());
-    localStorage.removeItem('corexe-site-update'); // Event tetiklemek için
+    const timestamp = Date.now().toString();
+    localStorage.setItem('corexe-site-update', timestamp);
+    // Custom event gönder (aynı tab için)
+    window.dispatchEvent(new CustomEvent('corexe-site-update', { detail: { timestamp } }));
+    // Storage event için (farklı tab'lar)
+    setTimeout(() => {
+      localStorage.removeItem('corexe-site-update');
+    }, 100);
   } catch (e) {
     console.warn('localStorage not available');
   }
@@ -40,15 +47,25 @@ export function listenForSiteUpdates(callback: () => void) {
     console.warn('BroadcastChannel not supported');
   }
   
-  // localStorage event listener (fallback)
+  // localStorage event listener (fallback - farklı tab'lar için)
   const handleStorageChange = (e: StorageEvent) => {
     if (e.key === 'corexe-site-update' && e.newValue) {
-      console.log('🔄 Site güncellemesi algılandı (localStorage)');
+      console.log('🔄 Site güncellemesi algılandı (localStorage - farklı tab)');
+      callback();
+    }
+  };
+  
+  // Custom event listener (aynı tab için)
+  const handleCustomUpdate = (e: Event) => {
+    const customEvent = e as CustomEvent;
+    if (customEvent.detail?.timestamp) {
+      console.log('🔄 Site güncellemesi algılandı (CustomEvent - aynı tab)');
       callback();
     }
   };
   
   window.addEventListener('storage', handleStorageChange);
+  window.addEventListener('corexe-site-update', handleCustomUpdate);
   
   // Cleanup function
   return () => {
@@ -56,5 +73,6 @@ export function listenForSiteUpdates(callback: () => void) {
       channel.close();
     }
     window.removeEventListener('storage', handleStorageChange);
+    window.removeEventListener('corexe-site-update', handleCustomUpdate);
   };
 }

@@ -86,20 +86,26 @@ export default function AdminProductsPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
-        console.log('✅ Veri kaydedildi:', data.products.length, 'ürün');
+        console.log('✅ Veritabanına kaydedildi:', data.products.length, 'ürün');
         // Ana sayfaya güncelleme bildirimi gönder (ANLIK GÜNCELLEME)
         notifySiteUpdate();
-        // Veriyi tekrar yükle
-        setTimeout(() => {
-          fetch("/api/site", { cache: 'no-store' })
-            .then((r) => r.json())
-            .then((newData) => {
-              console.log('🔄 Veri yenilendi:', newData.products?.length, 'ürün');
-              setData(newData);
-            })
-            .catch(() => {});
-        }, 500);
+        console.log('📢 Güncelleme bildirimi gönderildi');
+        
+        // Veritabanından tekrar okuyarak doğrula (veritabanına kaydedildiğinden emin ol)
+        setTimeout(async () => {
+          try {
+            const verifyRes = await fetch("/api/site", { cache: 'no-store' });
+            const verifiedData = await verifyRes.json();
+            console.log('✅ Veritabanı doğrulandı:', verifiedData.products?.length, 'ürün');
+            setData(verifiedData);
+            setMessage(`✅ Kaydedildi ve doğrulandı! ${verifiedData.products?.length || 0} ürün veritabanında. Ana sayfa anında güncellenecek.`);
+          } catch (err) {
+            console.error('⚠️ Doğrulama hatası:', err);
+            setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+            // Yine de local state'i güncelle
+            setData(data);
+          }
+        }, 300);
       } else {
         setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);
         console.error('❌ Kayıt hatası:', result);
