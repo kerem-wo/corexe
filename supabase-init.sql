@@ -32,5 +32,8 @@ CREATE POLICY "Allow public update access" ON site_data
   FOR UPDATE
   USING (true);
 
--- 4. Tablo oluşturuldu ve veriler eklendi!
+-- 4. Veriyi kontrol et
+SELECT id, updated_at, jsonb_pretty(data) as data FROM site_data WHERE id = 'main';
+
+-- 5. Tablo oluşturuldu ve veriler eklendi!
 -- Artık admin panelinden yapılan değişiklikler Supabase'de kalıcı olarak saklanacak.
