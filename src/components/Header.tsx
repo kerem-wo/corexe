@@ -19,10 +19,13 @@ const nav = [
 export default function Header() {
   const pathname = usePathname();
   const { totalItems } = useCart();
+  const { data: siteData } = useSiteData();
   const headerRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLAnchorElement>(null);
   const navRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const cartRef = useRef<HTMLAnchorElement>(null);
+  
+  const siteName = siteData?.site?.name || "COREXE BEST";
 
   useEffect(() => {
     registerGsapPlugins();
