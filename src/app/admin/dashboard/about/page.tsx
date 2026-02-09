@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { notifySiteUpdate } from "@/lib/updateNotifier";
 import type { SiteData } from "@/lib/types";
 
 export default function AdminAboutPage() {
@@ -53,7 +54,8 @@ export default function AdminAboutPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa otomatik güncellenecek.");
+        setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+        notifySiteUpdate(); // ANLIK GÜNCELLEME
         setData({ ...data, about: form });
       } else {
         setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);

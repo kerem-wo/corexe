@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { notifySiteUpdate } from "@/lib/updateNotifier";
 import type { SiteData } from "@/lib/types";
 
 export default function AdminSitePage() {
@@ -55,7 +56,8 @@ export default function AdminSitePage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa otomatik güncellenecek.");
+        setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+        notifySiteUpdate(); // ANLIK GÜNCELLEME
         setData({ ...data, site: { ...data.site, ...form } });
       } else {
         setMessage(`❌ Kayıt başarısız: ${result.error || 'Bilinmeyen hata'}`);

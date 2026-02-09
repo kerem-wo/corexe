@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { notifySiteUpdate } from "@/lib/updateNotifier";
 import type { SiteData, Product } from "@/lib/types";
 
 export default function AdminUcProductsPage() {
@@ -77,7 +78,8 @@ export default function AdminUcProductsPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa otomatik güncellenecek.");
+        setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+        notifySiteUpdate(); // ANLIK GÜNCELLEME
         setTimeout(() => {
           fetch("/api/site", { cache: 'no-store' })
             .then((r) => r.json())

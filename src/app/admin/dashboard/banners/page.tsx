@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { notifySiteUpdate } from "@/lib/updateNotifier";
 import type { SiteData, DiscountBanner } from "@/lib/types";
 
 export default function AdminBannersPage() {
@@ -67,7 +68,8 @@ export default function AdminBannersPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa otomatik güncellenecek.");
+        setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
+        notifySiteUpdate(); // ANLIK GÜNCELLEME
         setTimeout(() => {
           fetch("/api/site", { cache: 'no-store' })
             .then((r) => r.json())

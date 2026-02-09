@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { notifySiteUpdate } from "@/lib/updateNotifier";
 import type { SiteData, Product } from "@/lib/types";
 
 export default function AdminProductsPage() {
@@ -85,8 +86,10 @@ export default function AdminProductsPage() {
       });
       const result = await res.json();
       if (res.ok && result.success) {
-        setMessage("✅ Kaydedildi! Ana sayfa 10 saniye içinde otomatik güncellenecek.");
+        setMessage("✅ Kaydedildi! Ana sayfa anında güncellenecek.");
         console.log('✅ Veri kaydedildi:', data.products.length, 'ürün');
+        // Ana sayfaya güncelleme bildirimi gönder (ANLIK GÜNCELLEME)
+        notifySiteUpdate();
         // Veriyi tekrar yükle
         setTimeout(() => {
           fetch("/api/site", { cache: 'no-store' })

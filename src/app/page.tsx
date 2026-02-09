@@ -8,6 +8,7 @@ import SocialLinksSection from "@/components/SocialLinksSection";
 import CartSection from "@/components/CartSection";
 import AnimatedSection from "@/components/AnimatedSection";
 import { registerGsapPlugins } from "@/lib/gsap";
+import { listenForSiteUpdates } from "@/lib/updateNotifier";
 import type { SiteData } from "@/lib/types";
 
 export default function HomePage() {
@@ -40,8 +41,14 @@ export default function HomePage() {
   useEffect(() => {
     loadData();
     
-    // Sayfa aktif olduğunda ve her 10 saniyede bir veriyi yeniden yükle
-    const interval = setInterval(loadData, 10000); // 10 saniye (daha hızlı güncelleme)
+    // Admin panelinden gelen güncelleme bildirimlerini dinle (ANLIK GÜNCELLEME)
+    const cleanup = listenForSiteUpdates(() => {
+      console.log('⚡ Admin panelinden güncelleme geldi, veri yenileniyor...');
+      loadData();
+    });
+    
+    // Sayfa aktif olduğunda ve her 10 saniyede bir veriyi yeniden yükle (fallback)
+    const interval = setInterval(loadData, 10000); // 10 saniye
     
     // Sayfa görünür olduğunda veriyi yeniden yükle
     const handleVisibilityChange = () => {
@@ -59,6 +66,7 @@ export default function HomePage() {
     window.addEventListener('focus', handleFocus);
     
     return () => {
+      cleanup();
       clearInterval(interval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleFocus);
