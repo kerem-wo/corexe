@@ -47,14 +47,14 @@ export function SiteDataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     loadData();
 
-    // Admin panelinden gelen güncelleme bildirimlerini dinle
+    // Admin panelinden gelen güncelleme bildirimlerini dinle (ANLIK GÜNCELLEME)
     const cleanup = listenForSiteUpdates(() => {
       console.log('⚡ Site güncellemesi algılandı, veri yenileniyor...');
       loadData();
     });
 
-    // Her 3 saniyede bir otomatik yenile (fallback)
-    const interval = setInterval(loadData, 3000);
+    // Her 30 saniyede bir otomatik yenile (fallback - çok sık istek yapmamak için)
+    const interval = setInterval(loadData, 30000);
 
     // Sayfa görünür olduğunda yenile
     const handleVisibilityChange = () => {

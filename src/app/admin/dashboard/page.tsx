@@ -49,8 +49,8 @@ export default function AdminDashboardPage() {
       loadData();
     });
     
-    // Her 3 saniyede bir otomatik yenile
-    const interval = setInterval(loadData, 3000);
+    // Her 30 saniyede bir otomatik yenile (fallback - çok sık istek yapmamak için)
+    const interval = setInterval(loadData, 30000);
     
     return () => {
       cleanup();
